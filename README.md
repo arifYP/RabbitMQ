@@ -247,3 +247,70 @@ When you hit the /send-mail API:
 * Laravel controller receives the email info.
 * It sends the data to the RabbitMQ queue.
 * consumer.php reads the queue and sends the email using PHP's mail library.
+
+
+# Documentation for installing the latest RabbitMQ (v4.1.1) and  Erlang/OTP on Ubuntu 22.04 LTS 
+
+### RabbitMQ is a powerful message broker based on the AMQP protocol, and it requires Erlang/OTP to run. Installing the correct version of Erlang is critical for RabbitMQ to function properly. This guide walks you through installing the latest official versions.
+
+##  Step-by-Step Installation
+### Update package index and install required dependencies:
+```
+sudo apt-get update
+sudo apt-get install curl gnupg apt-transport-https -y
+```
+### Import GPG key and add the official Erlang repository:
+```
+curl -fsSL https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/gpg.key | gpg --dearmor | sudo tee /usr/share/keyrings/rabbitmq-erlang.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/rabbitmq-erlang.gpg] https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/deb/ubuntu jammy main" | sudo tee /etc/apt/sources.list.d/rabbitmq-erlang.list
+```
+### Import GPG key and add the RabbitMQ repository:
+```
+curl -fsSL https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/gpg.key | gpg --dearmor | sudo tee /usr/share/keyrings/rabbitmq-server.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/rabbitmq-server.gpg] https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/deb/ubuntu jammy main" | sudo tee /etc/apt/sources.list.d/rabbitmq-server.list
+```
+### Update package index and install RabbitMQ (will auto-install Erlang):
+```
+sudo apt-get update
+sudo apt-get install rabbitmq-server -y
+```
+### Check the installed version of Erlang:
+```
+erl -version
+```
+### Check RabbitMQ version:
+```
+sudo rabbitmqctl version
+```
+### Start and Enable RabbitMQ Service
+```
+sudo systemctl enable rabbitmq-server
+sudo systemctl start rabbitmq-server
+```
+To check status:
+```
+sudo systemctl status rabbitmq-server
+```
+### Enable RabbitMQ Web Management Interface on port 15672
+```
+sudo rabbitmq-plugins enable rabbitmq_management
+sudo systemctl restart rabbitmq-server
+```
+### Access RabbitMQ Management Dashboard in browser
+```
+http://localhost:15672
+```
+Default credentials:
+Username: guest
+Password: guest
+
+## 📦 Useful RabbitMQ Commands
+
+| Command                                   | Description                        |
+|-------------------------------------------|------------------------------------|
+| `sudo rabbitmqctl status`                | View current server status         |
+| `sudo rabbitmqctl list_users`            | List all RabbitMQ users            |
+| `sudo rabbitmqctl add_user user pass`    | Add a new user                     |
+| `sudo rabbitmqctl set_permissions ...`   | Set permissions for a user         |
+| `sudo rabbitmq-plugins list`             | List available plugins             |
+| `sudo rabbitmq-plugins enable <name>`    | Enable a specific plugin           |
